@@ -1,0 +1,61 @@
+version: '3'
+services:
+  # RabbitMQ service
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq_custom
+    ports:
+      - '5673:5672' # RabbitMQ message broker port
+      - '15673:15672' # RabbitMQ management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  # MySQL service
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    ports:
+      - '3307:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: imbee_db
+
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+
+  # notification-microservices service (NestJS)
+  notification-microservices:
+    build:
+      context: ./apps/notification-microservices
+      dockerfile: Dockerfile
+    container_name: notification-microservices
+    restart: always
+    environment:
+      RABBITMQ_URL: amqp://rabbitmq:5673
+      RABBITMQ_QUEUE: notification_queue
+    depends_on:
+      - rabbitmq
+    ports:
+      - '3001:3001'
+
+  # Consumers service (NestJS)
+  consumers:
+    build:
+      context: ./apps/consumers
+      dockerfile: Dockerfile
+    container_name: consumers
+    restart: always
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USERNAME: root
+      DB_PASSWORD: password
+      DB_NAME: imbee_db
+      RABBITMQ_URL: amqp://rabbitmq:5673
+      RABBITMQ_QUEUE: notification_queue
+    depends_on:
+      - rabbitmq
+      - mysql
+    ports:
+      - '3002:3002'
