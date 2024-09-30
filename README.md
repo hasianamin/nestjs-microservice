@@ -35,27 +35,21 @@ $ npm install
 ## Running the app
 
 ```bash
-# development
-$ npm run start
+# run the consumers services
+$ npm run start:consumers
 
-# watch mode
-$ npm run start:dev
+# run the producers services
+$ npm run start:producers
 
-# production mode
-$ npm run start:prod
 ```
 
 ## Test
 
 ```bash
-# unit tests
-$ npm run test
+# run on postman
+$ POST http://localhost:3001/notification
+$ body { "identifier":"fcm-msg-3", "text": "here is number 3", "deviceId": "fDH6mCcfaTelIQxgbwlBr5:APA91bFqZIFniYdESslJQ-9uCeDSkiF8Pxp2cV6npG3Su1pcDryNfVytW_dA0PR3AZM91-a8gYMa7b1TAiBDF0Z6fXyy40FvPTq3IqrRGe8fDlzX0-m6PpLaFkqa2j0hX6lmvqxluRe6"}
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
 ```
 
 ## Support
